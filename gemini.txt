@@ -1,0 +1,10 @@
+streamlit
+speechrecognition
+pyaudio
+openai
+google-generativeai
+pdfplumber
+pytesseract
+pdf2image
+Pillow
+python-dotenv
