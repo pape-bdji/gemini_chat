@@ -53,18 +53,23 @@ def get_response(user_input):
         return get_gemini_response(user_input)
     return "Je n'ai pas compris."
 
-# Créer l'application Streamlit (inchangée)
+# Créer l'application Streamlit
 def main():
-    st.title("Chatbot à commande vocale ")
+    st.title("Chatbot (avec transcription audio depuis un fichier)")
 
-    user_input = st.text_input("Entrez votre message / utilisez la commande vocale")
+    user_input = st.text_input("Entrez votre message")
+    transcribed_text = transcribe_audio_from_file()
 
-    if st.button("Utiliser la voix"):
-        user_input = transcribe_audio()
+    final_input = user_input
+    if transcribed_text:
+        final_input = transcribed_text
 
-    if user_input:
-        response = get_response(user_input)
-        st.write("Chatbot : " + response)
+    if st.button("Envoyer"):
+        if final_input:
+            response = get_response(final_input)
+            st.write("Chatbot : " + response)
+        else:
+            st.warning("Veuillez entrer un message ou télécharger un fichier audio.")
 
 if __name__ == "__main__":
     main()
