@@ -25,23 +25,26 @@ def get_gemini_response(prompt):
     response = model.generate_content(prompt)
     return response.text
 
-# Fonction de reconnaissance vocale (inchangée)
-def transcribe_audio():
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.write("Veuillez parler...")
-        audio = r.listen(source)
+# Fonction de reconnaissance vocale (modifiée pour le téléchargement de fichier)
+def transcribe_audio_from_file():
+    uploaded_file = st.file_uploader("Téléchargez un fichier audio pour la transcription", type=["wav", "flac", "mp3"])
+    if uploaded_file is not None:
+        try:
+            r = sr.Recognizer()
+            with sr.AudioFile(uploaded_file) as source:
+                audio = r.record(source)  # read the entire audio file
+            try:
+                text = r.recognize_google(audio, language='fr-FR')
+                st.write("Vous avez dit (à partir du fichier) : " + text)
+                return text
+            except sr.UnknownValueError:
+                st.error("Désolé, Google Speech Recognition n'a pas pu comprendre l'audio dans le fichier.")
+            except sr.RequestError as e:
+                st.error(f"Erreur de service Google Speech Recognition ; {e}")
+        except Exception as e:
+            st.error(f"Erreur lors du traitement du fichier audio : {e}")
+    return None
 
-    try:
-        text = r.recognize_google(audio, language='fr-FR')
-        st.write("Vous avez dit : " + text)
-        return text
-    except sr.UnknownValueError:
-        st.error("Désolé, je n'ai pas compris.")
-        return ""
-    except sr.RequestError as e:
-        st.error("Erreur de service; {0}".format(e))
-        return ""
 
 # Fonction pour obtenir la réponse du chatbot (modifiée pour utiliser Gemini)
 def get_response(user_input):
